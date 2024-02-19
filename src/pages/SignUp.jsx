@@ -5,12 +5,95 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { signInWithGoogle } from "../utils/helpers";
-import { motion } from "framer-motion";
+import { signInWithGithub, signInWithGoogle } from "../utils/helpers";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../config/firebaseConfig";
 
 const SignUp = () => {
   const [showPass, setShowPass] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [alert, setAlert] = useState(false);
+  const [alertMesssage, setAlertMessage] = useState("");
+
+  const validateEmail = (value) => {
+    // Regular expression for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!value) {
+      setEmailError("Email is required");
+    } else if (!emailRegex.test(value)) {
+      setEmailError("Invalid email format");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const validatePassword = (value) => {
+    if (!value) {
+      setPasswordError("Password is required");
+    } else if (value.length < 6) {
+      setPasswordError("Password must be at least 6 characters long");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const createNewUser = async () => {
+    if (validateEmail && validatePassword) {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          if (userCredential) {
+            console.log(userCredential);
+          }
+        })
+        .catch((err) => {
+          console.log("Something went wrong");
+        });
+    }
+  };
+
+  const loginWithEmailPassword = async () => {
+    if (validateEmail && validatePassword) {
+      await signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          if (userCredential) {
+            console.log(userCredential);
+          }
+        })
+        .catch((err) => {
+          console.log(err.message);
+          if (err.message.includes("invalid-credential")) {
+            setAlert(true);
+            setAlertMessage("Invalid Id : User Not Found");
+          } else {
+            setAlert(true);
+            setAlertMessage("Temporarily disabled due to manu failed login");
+          }
+          setInterval(() => {
+            setAlert(false);
+          }, 3000);
+        });
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    validateEmail(email);
+    validatePassword(password);
+
+    if (!emailError && !passwordError) {
+      createNewUser();
+    } else {
+      console.log("Form has errors, please fix them");
+    }
+  };
 
   return (
     <>
@@ -31,19 +114,26 @@ const SignUp = () => {
               <MdEmail className="text-xl opacity-70" />
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => validateEmail(email)}
                 className="bg-transparent outline-none w-full"
                 placeholder="johndoe@gmail.com"
               />
             </div>
+            {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-sm" htmlFor="email">
+            <label className="text-sm" htmlFor="password">
               Password
             </label>
             <div className="flex bg-[#363636] py-2.5 px-5 rounded-md items-center gap-4">
               <RiLockPasswordFill className="text-xl opacity-70" />
               <input
                 type={`${showPass ? "text" : "password"}`}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => validatePassword(password)}
                 className="bg-transparent outline-none w-full"
                 placeholder="At least 6 digits"
               />
@@ -59,12 +149,44 @@ const SignUp = () => {
                 />
               )}
             </div>
+            {passwordError && (
+              <p className="text-red-500 text-sm">{passwordError}</p>
+            )}
           </div>
-          <button className="py-2 text-lg font-medium bg-emerald-500 hover:bg-emerald-600 mt-8 rounded-md text-white w-full">
-            {isLogin ? "Sign Up" : "Login"}
-          </button>
+
+          {/* Alert Message */}
+
+          <AnimatePresence>
+            {alert && (
+              <motion.p
+                key={"AlertMessage"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-red-500 text-center mt-8"
+              >
+                {alertMesssage}
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {isLogin ? (
+            <button
+              onClick={handleSubmit}
+              className="py-2 text-lg font-medium bg-emerald-500 hover:bg-emerald-600 mt-8 rounded-md text-white w-full"
+            >
+              Sign Up
+            </button>
+          ) : (
+            <button
+              onClick={loginWithEmailPassword}
+              className="py-2 text-lg font-medium bg-emerald-500 hover:bg-emerald-600 mt-8 rounded-md text-white w-full"
+            >
+              Login
+            </button>
+          )}
           <p className="mt-3 text-gray-300">
-            Already have a an account?{" "}
+            Already have an account?{" "}
             <span
               onClick={() => setIsLogin(!isLogin)}
               className="underline cursor-pointer text-emerald-500"
@@ -85,10 +207,14 @@ const SignUp = () => {
             <FcGoogle />
             <span>Sign Up With Google</span>
           </motion.button>
-          <button className="flex items-center gap-3 w-full py-2.5 bg-[#474646] rounded-md justify-center mt-5">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={signInWithGithub}
+            className="flex items-center gap-3 w-full py-2.5 bg-[#474646] rounded-md justify-center mt-5"
+          >
             <FaGithub />
-            <span>Sign Up With Google</span>
-          </button>
+            <span>Sign Up With GitHub</span>
+          </motion.button>
         </div>
       </div>
     </>
