@@ -1,0 +1,21 @@
+@import url(https://fonts.googleapis.com/css?family=Outfit:100,200,300,regular,500,600,700,800,900);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Outfit", sans-serif;
+  color: #fff;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: #131417;
+}
+::-webkit-scrollbar {
+  display: none;
+}
