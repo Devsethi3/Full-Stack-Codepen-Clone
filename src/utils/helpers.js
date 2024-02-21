@@ -1,4 +1,8 @@
-import { GithubAuthProvider, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import {
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithRedirect,
+} from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
 
 const googleProvider = new GoogleAuthProvider();
@@ -12,6 +16,12 @@ export const signInWithGoogle = async () => {
 
 export const signInWithGithub = async () => {
   await signInWithRedirect(auth, githubProvider).then((userCredential) => {
+    window.location.reload();
+  });
+};
+
+export const singOutAction = async () => {
+  await auth.signOut().then(() => {
     window.location.reload();
   });
 };

@@ -24,7 +24,6 @@ const SignUp = () => {
   const [alertMesssage, setAlertMessage] = useState("");
 
   const validateEmail = (value) => {
-    // Regular expression for email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!value) {
       setEmailError("Email is required");

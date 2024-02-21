@@ -5,18 +5,19 @@ import { FaSearch } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Projects from "../components/projects/Projects";
+import { useSelector } from "react-redux";
+import UserDetails from "../components/profile/UserDetails";
 
 const Home = () => {
-  
   const [isSideMenu, setIsSideMenu] = useState(true);
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.user?.user);
 
   return (
     <>
       <div className="w-full h-screen flex gap-12 min-h-screen">
         <div
-          className={`w-[250px] ${
-            isSideMenu ? "w-[250px]" : "w-[5px]"
+          className={`w-[300px] ${
+            isSideMenu ? "w-[300px]" : "w-[4px]"
           } h-screen max-h-screen relative px-3 py-6 flex flex-col items-center justify-start gap-4 transition-all duration-200 ease-in-out bg-secondary`}
         >
           <motion.div
@@ -36,7 +37,7 @@ const Home = () => {
                 height={150}
               />
             </Link>
-            <Link to="/new-project">
+            <Link to="/newProject">
               <button className="flex whitespace-nowrap items-center gap-2 py-2 px-6 border-2 border-[#7c7c7c] rounded-md">
                 <FaCode />
                 <span>Start Coding</span>
@@ -55,7 +56,7 @@ const Home = () => {
         </div>
         <div className="mx-6 w-full h-screen">
           <div className="py-6 items-center flex gap-4">
-            <div className="bg-secondary py-2.5 rounded-md px-4 flex items-center gap-3 w-[90%]">
+            <div className="bg-secondary py-2.5 rounded-md px-4 flex items-center gap-3 w-[100%]">
               <FaSearch className="mr-3 opacity-70" />
               <input
                 className="w-full outline-none bg-transparent"
@@ -63,10 +64,10 @@ const Home = () => {
                 placeholder="Search Here..."
               />
             </div>
-            <div className={` ${user ? "w-[15%]" : "w-[10%]"} w-[10%]`}>
+            <div className="">
               {user ? (
                 <div className="">
-                  <Link to="/auth">Sign Up</Link>
+                  <UserDetails user={user} />
                 </div>
               ) : (
                 <motion.div whileTap={{ scale: 0.9 }} className="">
