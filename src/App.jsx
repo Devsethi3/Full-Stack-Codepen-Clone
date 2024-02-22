@@ -2,10 +2,18 @@ import { Route, useNavigate, Routes } from "react-router-dom";
 import { Home, NewProject, SignUp } from "./pages";
 import { useEffect, useState } from "react";
 import { auth, db } from "./config/firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import Loading from "./components/loading/Loading";
 import { useDispatch } from "react-redux";
 import { SET_USER } from "./context/actions/userAction";
+import { SET_PROJECTS } from "./context/actions/projectAction";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +41,19 @@ const App = () => {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const projectQuery = query(
+      collection(db, "Projects"),
+      orderBy("id", "desc")
+    );
+    const unsubscribe = onSnapshot(projectQuery, (querySnaps) => {
+      const projectList = querySnaps.docs.map((doc) => doc.data());
+      dispatch(SET_PROJECTS(projectList));
+    });
+
+    return unsubscribe;
   }, []);
 
   return (

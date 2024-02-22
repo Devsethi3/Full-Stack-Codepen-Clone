@@ -8,12 +8,26 @@ import { javascript } from "@codemirror/lang-javascript";
 import CodeMirror from "@uiw/react-codemirror";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaEdit, FaCheck } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import UserDetails from "../components/profile/UserDetails";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
+import Alert from "../components/alert/Alert";
 
 const NewProject = () => {
   const [html, setHtml] = useState("");
   const [css, setCss] = useState("");
   const [js, setJs] = useState("");
   const [output, setOutput] = useState("");
+  const [title, setTitle] = useState("Untitled");
+
+  const [alret, setAlret] = useState(false);
+
+  const [isTitle, setIsTitle] = useState("");
+  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     updateOutput();
@@ -32,12 +46,121 @@ const NewProject = () => {
     setOutput(combinedOutput);
   };
 
+  const saveProject = async () => {
+    const id = Date.now();
+    const _doc = {
+      id: id,
+      title: title,
+      html: html,
+      css: css,
+      js: js,
+      output: output,
+      user: user,
+    };
+
+    await setDoc(doc(db, "Projects", id))
+      .then((res) => {
+        setAlret(true);
+      })
+      .catch((err) => console.log(err));
+
+    setInterval(() => {
+      setAlret(false);
+    }, 2000);
+  };
+
   return (
     <>
       <div className="w-screen h-screen flex flex-col items-start justify-start overflow-hidden">
         {/* Alert Section */}
-
+        {alret && <Alert title="Project Saved Successfully" status="success" />}
         {/* header Section */}
+        <header className="w-full flex items-center justify-between px-12 py-4">
+          <div className="flex items-center justify-center gap-6">
+            <Link to={"/"}>
+              <img src="/logo.png" width={120} height={120} alt="logo" />
+            </Link>
+            <div className="flex flex-col items-start justify-normal">
+              {/* Title */}
+              <div className="flex items-center justify-center gap-3">
+                <AnimatePresence>
+                  {isTitle ? (
+                    <motion.input
+                      key={"titleInput"}
+                      type="text"
+                      className="px-4 py-2 outline-none rounded-md bg-gray-800"
+                      placeholder="Your Title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    ></motion.input>
+                  ) : (
+                    <>
+                      <motion.p
+                        key={"titleLabel"}
+                        className="px-3 py-2 text-lg"
+                      >
+                        {title}
+                      </motion.p>
+                    </>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {isTitle ? (
+                    <>
+                      <motion.div
+                        key={"FaCheck"}
+                        whileTap={{ scale: 0.9 }}
+                        className="cursor-pointer"
+                        onClick={() => setIsTitle(false)}
+                      >
+                        <FaCheck className="text-emerald-500" />
+                      </motion.div>
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                        key={"FaEdit"}
+                        whileTap={{ scale: 0.9 }}
+                        className="cursor-pointer"
+                        onClick={() => setIsTitle(true)}
+                      >
+                        <FaEdit className="text-gray-500" />
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+              {/* Follow */}
+              <div className="flex items-center justify-center px-3 gap-4">
+                <p className="text-gray-300 text-sm">
+                  {user?.displayName
+                    ? user?.displayName
+                    : `${user?.email.split("@")[0]}`}
+                </p>
+                <motion.p
+                  whileTap={{ scale: 0.9 }}
+                  className="text-xs px-2.5 py-[2px] bg-[#05a271] rounded-sm text-white cursor-pointer"
+                >
+                  Follow +
+                </motion.p>
+              </div>
+            </div>
+          </div>
+
+          {/* User Section */}
+          {user && (
+            <div className="flex items-center justify-center gap-4">
+              <motion.button
+                onClick={saveProject}
+                className="px-6 py-2 bg-[#05a271] text-white font-medium rounded-md"
+              >
+                Save Project
+              </motion.button>
+              <UserDetails user={user} />
+            </div>
+          )}
+        </header>
 
         {/* coding Section */}
         <div>
