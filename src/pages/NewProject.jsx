@@ -65,7 +65,7 @@ const NewProject = () => {
                     <IoChevronDownOutline className="text-xl text-gray-400" />
                   </div>
                 </div>
-                <div className="w-full h-full">
+                <div className="w-full overflow-y-auto h-full">
                   <CodeMirror
                     value={html}
                     height="600px"
@@ -91,7 +91,7 @@ const NewProject = () => {
                       <IoChevronDownOutline className="text-xl text-gray-400" />
                     </div>
                   </div>
-                  <div className="w-full h-full">
+                  <div className="w-full overflow-y-auto h-full">
                     <CodeMirror
                       value={css}
                       height="600px"
@@ -115,10 +115,10 @@ const NewProject = () => {
                       <IoChevronDownOutline className="text-xl text-gray-400" />
                     </div>
                   </div>
-                  <div className="w-full h-full">
+                  <div className="w-full overflow-y-auto h-full">
                     <CodeMirror
-                      value={js}
                       height="600px"
+                      value={js}
                       theme={dracula}
                       extensions={[javascript({ jsx: true })]}
                       onChange={(value, viewUpdate) => {
@@ -134,7 +134,7 @@ const NewProject = () => {
             <div
               className="bg-white"
               style={{ overflow: "hidden", height: "100%" }}
-            > 
+            >
               <iframe
                 title="Result"
                 srcDoc={output}
