@@ -5,12 +5,19 @@ import { FaSearch } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Projects from "../components/projects/Projects";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import UserDetails from "../components/profile/UserDetails";
+import { SET_SEARCH_TERM } from "../context/actions/searchAction";
 
 const Home = () => {
   const [isSideMenu, setIsSideMenu] = useState(true);
   const user = useSelector((state) => state.user?.user);
+
+  const searchTerm = useSelector((state) =>
+    state.searchTerm?.searchTerm ? state.searchTerm?.searchTerm : ""
+  );
+
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -59,6 +66,7 @@ const Home = () => {
             <div className="bg-secondary py-2.5 rounded-md px-4 flex items-center gap-3 w-[100%]">
               <FaSearch className="mr-3 opacity-70" />
               <input
+                onChange={(e) => dispatch(SET_SEARCH_TERM(e.target.value))}
                 className="w-full outline-none bg-transparent"
                 type="text"
                 placeholder="Search Here..."
