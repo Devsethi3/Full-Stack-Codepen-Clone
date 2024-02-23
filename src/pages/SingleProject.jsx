@@ -47,7 +47,7 @@ const NewProject = () => {
     setOutput(combinedOutput);
   };
 
-  const saveProject = async () => {
+  const updateProject = async () => {
     const id = Date.now();
     try {
       const projectRef = await addDoc(collection(db, "Projects"), {
@@ -157,10 +157,10 @@ const NewProject = () => {
           {user && (
             <div className="flex items-center justify-center gap-4">
               <motion.button
-                onClick={saveProject}
+                onClick={updateProject}
                 className="px-6 py-2 bg-[#05a271] text-white font-medium rounded-md"
               >
-                Save Project
+                Update Project
               </motion.button>
               <UserDetails user={user} />
             </div>

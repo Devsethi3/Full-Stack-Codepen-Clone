@@ -52,7 +52,7 @@ const Home = () => {
             </Link>
 
             {user && (
-              <Link to="/projects">
+              <Link to="/">
                 <button className="flex whitespace-nowrap items-center gap-2 py-2 px-6 border-2 border-[#ffffff00] bg-primary shadow-lg rounded-md">
                   <MdHome />
                   <span>Go To Home</span>

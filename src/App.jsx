@@ -1,5 +1,5 @@
 import { Route, useNavigate, Routes } from "react-router-dom";
-import { Home, NewProject, SignUp } from "./pages";
+import { Home, NewProject, SignUp, SingleProject } from "./pages";
 import { useEffect, useState } from "react";
 import { auth, db } from "./config/firebaseConfig";
 import {
@@ -68,12 +68,12 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<SignUp />} />
             <Route path="/newProject" element={<NewProject />} />
+            <Route path="/projects/:id" element={<SingleProject />} />
           </Routes>
         </div>
       )}
     </>
   );
-  b;
 };
 
 export default App;

@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import ProjectCard from "../projectCard/ProjectCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Projects = () => {
   const [filtered, setFiltered] = useState(null);
