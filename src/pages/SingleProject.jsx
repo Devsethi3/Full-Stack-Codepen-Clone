@@ -13,26 +13,46 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaEdit, FaCheck } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import UserDetails from "../components/profile/UserDetails";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import Alert from "../components/alert/Alert";
 import { collection, addDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 
 const NewProject = () => {
+  const { id: paramsId } = useParams();
+  console.log(paramsId);
+  // const projects = useSelector((state) => state.projects?.projects);
+  const user = useSelector((state) => state.user.user);
   const [html, setHtml] = useState("");
   const [css, setCss] = useState("");
   const [js, setJs] = useState("");
   const [output, setOutput] = useState("");
   const [title, setTitle] = useState("Untitled");
+  const [projectId, setProjectId] = useState();
 
   const [alert, setAlert] = useState(false);
 
   const [isTitle, setIsTitle] = useState("");
-  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     updateOutput();
   }, [html, css, js]);
+
+  useEffect(() => {
+    setProjectId(paramsId);
+
+    const getProjectDetail = async () => {
+      const projectRef = doc(db, "Projects", projectId);
+      const projectSnap = await getDoc(projectRef);
+      if (projectSnap.exists()) {
+        console.log(projectSnap.data());
+      } else{
+        console.log("No such document exists");
+      }
+    };
+    getProjectDetail();
+  }, [paramsId]);
 
   const updateOutput = () => {
     const combinedOutput = `
@@ -48,10 +68,10 @@ const NewProject = () => {
   };
 
   const updateProject = async () => {
-    const id = Date.now();
     try {
-      const projectRef = await addDoc(collection(db, "Projects"), {
-        id: id,
+      const projectRef = doc(db, "Projects", projectId);
+
+      await setDoc(projectRef, {
         title: title,
         html: html,
         css: css,
@@ -62,7 +82,7 @@ const NewProject = () => {
         userImage: user.photoURL,
       });
 
-      console.log("Project saved with ID: ", projectRef.id);
+      console.log("Project updated with ID: ", projectId);
 
       setAlert(true);
       setTimeout(() => {
@@ -70,7 +90,7 @@ const NewProject = () => {
         history.push("/");
       }, 2000);
     } catch (error) {
-      console.error("Error saving project:", error);
+      console.error("Error updating project:", error);
     }
   };
 

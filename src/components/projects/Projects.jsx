@@ -42,7 +42,7 @@ const Projects = () => {
               projects.map((project, index) => (
                 <ProjectCard key={index} project={project} index={index} />
               ))}
-          </>
+          </> 
         )}
       </div>
     </>
