@@ -16,7 +16,6 @@ import { useProjectState } from "../../context/userContext/postContext/PostConte
 
 const SingleProjectPage = () => {
   const { id: params } = useParams();
-  console.log(params);
 
   const { listOfProject } = useProjectState();
 
@@ -34,22 +33,27 @@ const SingleProjectPage = () => {
   const { user } = useUserState();
 
   const [projectId, setProjectId] = useState();
-  
+  const [postDetail, setPostDetail] = useState([]);
   useEffect(() => {
-    setProjectId(params.projectId);
+    setProjectId(params);
+  }, []);
 
-    const getProjectDetail = async () => {
-      const docRef = doc(db, "Projects", params.projectId);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getPinDetail = async () => {
+      const docRef = doc(db, "Projects", projectId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         console.log(docSnap.data());
+        setIsLoading(false);
       } else {
         console.log("No such document!");
       }
     };
 
-    getProjectDetail();
-  }, [params.projectId]);
+    getPinDetail();
+  }, [projectId]);
 
   useEffect(() => {
     updateOutput();
