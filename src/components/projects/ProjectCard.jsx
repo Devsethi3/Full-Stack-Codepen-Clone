@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const ProjectCard = ({ project, index }) => {
   return (
@@ -36,7 +37,9 @@ const ProjectCard = ({ project, index }) => {
             )}
           </div>
           <div className="flex flex-col">
-            <h4 className="font-medium text-xl">{project.title}</h4>
+            <Link to={`project/${project.id}`}>
+              <h4 className="font-medium text-xl">{project.title}</h4>
+            </Link>
             <p className="opacity-70 text-sm">{project.userName}</p>
           </div>
         </div>
