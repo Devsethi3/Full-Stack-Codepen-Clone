@@ -1,49 +1,31 @@
-import { useSelector } from "react-redux";
-import ProjectCard from "../projectCard/ProjectCard";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../../config/firebaseConfig";
 import { useEffect, useState } from "react";
+import ProjectCard from "./ProjectCard";
 
 const Projects = () => {
-  const [filtered, setFiltered] = useState(null);
-
-  const projects = useSelector((state) => state.projects?.projects);
-
-  const searchTerm = useSelector((state) =>
-    state.searchTerm?.searchTerm ? state.searchTerm?.searchTerm : ""
-  );
+  const [projectsData, setProjectsData] = useState([]);
 
   useEffect(() => {
-    if (searchTerm?.length > 0) {
-      setFiltered(
-        projects?.filter((project) => {
-          const lowerCaseItem = project?.title.toLowerCase();
-          return searchTerm
-            .split("")
-            .every((letter) => lowerCaseItem.includes(letter));
-        })
-      );
-    } else {
-      setFiltered(null);
+    getAllPins();
+  }, []);
+  const getAllPins = async () => {
+    try {
+      const q = query(collection(db, "Projects"));
+      const querySnapshot = await getDocs(q);
+      const projectsData = querySnapshot.docs.map((doc) => doc.data());
+      setProjectsData(projectsData);
+    } catch (error) {
+      console.error("Error fetching user pins:", error);
     }
-  }, [searchTerm]);
+  };
 
   return (
     <>
-      <div className="w-full py-6 flex items-center justify-center gap-5 flex-wrap">
-        {filtered ? (
-          <>
-            {filtered &&
-              filtered.map((project, index) => (
-                <ProjectCard key={index} project={project} index={index} />
-              ))}
-          </>
-        ) : (
-          <>
-            {projects &&
-              projects.map((project, index) => (
-                <ProjectCard key={index} project={project} index={index} />
-              ))}
-          </> 
-        )}
+      <div className="grid grid-cols-3 gap-6">
+        {projectsData.map((project, index) => (
+          <ProjectCard project={project} key={index} />
+        ))}
       </div>
     </>
   );

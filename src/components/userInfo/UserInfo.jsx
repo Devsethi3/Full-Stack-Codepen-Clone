@@ -5,10 +5,12 @@ import { Link } from "react-router-dom";
 import { VscProject } from "react-icons/vsc";
 import { TbLogout } from "react-icons/tb";
 import { MdCollectionsBookmark } from "react-icons/md";
-import { useState } from "react";
 import { singOutAction } from "../../utils/helpers";
-const UserDetails = ({ user }) => {
+import { useState } from "react";
+
+const UserInfo = ({ user }) => {
   const [isMenu, setIsMenu] = useState(false);
+
   return (
     <>
       <div className="flex items-center justify-center relative gap-4">
@@ -79,4 +81,4 @@ const UserDetails = ({ user }) => {
   );
 };
 
-export default UserDetails;
+export default UserInfo;
