@@ -21,7 +21,7 @@ const Projects = () => {
           id: doc.id,
           ...doc.data(),
         };
-        setDocId(doc.id); // Log the document ID
+        setDocId(doc.id);
         return data;
       });
 
