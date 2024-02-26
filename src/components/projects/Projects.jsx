@@ -5,15 +5,26 @@ import ProjectCard from "./ProjectCard";
 
 const Projects = () => {
   const [projectsData, setProjectsData] = useState([]);
+  const [docId, setDocId] = useState();
 
   useEffect(() => {
-    getAllPins();
+    getAllProjects();
   }, []);
-  const getAllPins = async () => {
+
+  const getAllProjects = async () => {
     try {
       const q = query(collection(db, "Projects"));
       const querySnapshot = await getDocs(q);
-      const projectsData = querySnapshot.docs.map((doc) => doc.data());
+
+      const projectsData = querySnapshot.docs.map((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        setDocId(doc.id); // Log the document ID
+        return data;
+      });
+
       setProjectsData(projectsData);
     } catch (error) {
       console.error("Error fetching user pins:", error);
@@ -24,7 +35,7 @@ const Projects = () => {
     <>
       <div className="grid grid-cols-3 gap-6">
         {projectsData.map((project, index) => (
-          <ProjectCard project={project} key={index} />
+          <ProjectCard docId={docId} project={project} key={index} />
         ))}
       </div>
     </>

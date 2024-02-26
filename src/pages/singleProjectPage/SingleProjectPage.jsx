@@ -33,27 +33,31 @@ const SingleProjectPage = () => {
   const { user } = useUserState();
 
   const [projectId, setProjectId] = useState();
-  const [postDetail, setPostDetail] = useState([]);
-  useEffect(() => {
-    setProjectId(params);
-  }, []);
+  const [projectDetail, setProjectDetail] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getPinDetail = async () => {
-      const docRef = doc(db, "Projects", projectId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        console.log(docSnap.data());
-        setIsLoading(false);
-      } else {
-        console.log("No such document!");
+    const getProjectDetail = async () => {
+      try {
+        const docRef = doc(db, "Projects", params);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProjectDetail(docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching project detail:", error);
       }
     };
 
-    getPinDetail();
-  }, [projectId]);
+    getProjectDetail();
+  }, [params]);
+
+  useEffect(() => {
+    console.log(projectDetail);
+  }, [projectDetail]);
 
   useEffect(() => {
     updateOutput();
@@ -72,7 +76,8 @@ const SingleProjectPage = () => {
     setOutput(combinedOutput);
   };
 
-  const saveProject = async () => {};
+  const updateProject = async () => {};
+  const deleteProject = async () => {};
 
   return (
     <div>
@@ -251,7 +256,6 @@ const SingleProjectPage = () => {
             <iframe
               title="Result"
               srcDoc={output}
-              allowFullScreen="true"
               className="w-full h-auto"
               sandbox="allow-scripts allow-same-origin"
             ></iframe>
